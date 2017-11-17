@@ -2,6 +2,7 @@ import socket
 import threading
 import sys
 import pickle
+import io
 
 
 class Server():
@@ -38,7 +39,14 @@ class Server():
         for c in self.clients:
             try:
                 if c != cliente:
-                    c.send(msg)
+                    #c.send(msg)
+                    msg = io.BytesIO(msg)
+                    while True:
+                        chunk = msg.read(1024)
+                        if not chunk:
+                            c.send(b'end')
+                            break
+                        c.send(chunk)
             except:
                 self.clients.remove(c)
 
@@ -54,13 +62,20 @@ class Server():
 
     def processCon(self):
         print("Processamento")
+        data = b""
         while True:
             if len(self.clients) > 0:
                 for c in self.clients:
                     try:
-                        data = c.recv(1024)     #fino a 11 ostacoli
-                        if data:
-                            self.msg_to_all(data, c)
+                        #data = c.recv(1024)
+                        while True:
+                            chunk = c.recv(1024)
+                            if chunk != b'end':
+                                data += chunk
+                            else:
+                                self.msg_to_all(data, c)
+                                data = b""
+                                break
                     except:
                         pass
 

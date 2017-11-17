@@ -1,6 +1,9 @@
 import math
 from PyQt4.QtCore import *
 import sympy
+import sys
+import pickle
+
 
 
 class Obstacle:
@@ -18,3 +21,6 @@ class Obstacle:
         if obstacle.x == self.x and obstacle.y == self.y:
             return True
         return False
+
+
+

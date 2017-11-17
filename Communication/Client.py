@@ -1,7 +1,7 @@
 import socket
 import threading
 from threading import Thread, Event
-import sys
+import io
 import pickle
 
 
@@ -35,7 +35,18 @@ class Client(Thread):
     def msg_recv(self):
         while True:
             try:
-                data = self.sock.recv(1024) #fino a 11 ostacoli
+                data = b""
+                while True:
+                    chunk = self.sock.recv(1024)
+                    print("bhoooooooooooooooooooooooooooooooooooo")
+                    print(chunk)
+                    if chunk != b'end':
+                        data += chunk
+                    else:
+                        break
+                #data = self.sock.recv(1024)
+                print("DATA FINALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
+                print(data)
                 if data:
                     obstacles = pickle.loads(data)
                     self.lock.acquire()
@@ -46,4 +57,13 @@ class Client(Thread):
                 pass
 
     def send_msg(self, msg):
-        self.sock.send(pickle.dumps(msg))
+        data_send = pickle.dumps(msg)
+        #self.sock.send(pickle.dumps(msg))
+        data = io.BytesIO(data_send)
+        while True:
+            chunk = data.read(1024)
+            if not chunk:
+                self.sock.send(b'end')
+                break
+            self.sock.send(chunk)
+
