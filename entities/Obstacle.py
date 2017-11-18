@@ -1,5 +1,4 @@
 import math
-from PyQt4.QtCore import *
 import sympy
 import sys
 import pickle

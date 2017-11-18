@@ -15,6 +15,7 @@ class Client(Thread):
         # connessione al server web sulla porta 4000
         self.sock.connect((str(host), int(port)))
 
+        # msg_recv thread daemon per la ricezione dei messaggi
         msg_recv = threading.Thread(target=self.msg_recv)
 
         msg_recv.daemon = True
@@ -26,26 +27,27 @@ class Client(Thread):
         self.lock = lock
         #self.radius_list = [1, 2, 3, 4]
 
+
     def run(self):
         while not self.stopped.wait(5):
             self.lock.acquire()
             self.send_msg(self.robot.obstacles)
             self.lock.release()
 
+    #funzione che permette di ricevere il messaggio inoltrato dal server, in pacchetti da 1024 byte, e che
+    # richiama la funzione compare_obstacle di robot.
     def msg_recv(self):
         while True:
             try:
                 data = b""
                 while True:
                     chunk = self.sock.recv(1024)
-                    print("bhoooooooooooooooooooooooooooooooooooo")
                     print(chunk)
                     if chunk != b'end':
                         data += chunk
                     else:
                         break
                 #data = self.sock.recv(1024)
-                print("DATA FINALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
                 print(data)
                 if data:
                     obstacles = pickle.loads(data)
@@ -55,7 +57,7 @@ class Client(Thread):
                     self.lock.release()
             except:
                 pass
-
+    #funzione invia il messaggio del client(la lista degli ostacoli) in pacchetti da 1024 byte
     def send_msg(self, msg):
         data_send = pickle.dumps(msg)
         #self.sock.send(pickle.dumps(msg))

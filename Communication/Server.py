@@ -15,18 +15,24 @@ class Server():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # associa il socket a un host e alla porta 4000
         self.sock.bind((str(host), int(port)))
+        # Il server é in ascolto e vengono messe in coda al massimo 10 richieste di connessione
         self.sock.listen(10)
+        # rende la socket non bloccante
         self.sock.setblocking(False)
 
+        # Thread per accettare connessioni
         accept = threading.Thread(target=self.acceptCon)
+        # Thread che riceve la lista degli ostacoli e li rinvia ai client della rete
         process = threading.Thread(target=self.processCon)
 
+        #Il thread accept e proccess vengono dichiarati daemon e runnati
         accept.daemon = True
         accept.start()
 
         process.daemon = True
         process.start()
 
+        #La condizione per fermare il server è digitare esci
         while True:
             msg = input('->')
             if msg == 'esci':
@@ -35,6 +41,9 @@ class Server():
             else:
                 pass
 
+
+    #funzione che permette di inviare il messaggio di un client, in pacchetti di 1024 byte, a tutti gli
+    #altri client della rete
     def msg_to_all(self, msg, cliente):
         for c in self.clients:
             try:
@@ -50,6 +59,7 @@ class Server():
             except:
                 self.clients.remove(c)
 
+    #funzione che accetta le connessioni
     def acceptCon(self):
         print("Accettazione")
         while True:
@@ -60,6 +70,8 @@ class Server():
             except:
                 pass
 
+    #funzione che permette di ricevere il messaggio di un client, in pacchetti di 1024 byte, e
+    #richiama la funzione msg_to_all
     def processCon(self):
         print("Processamento")
         data = b""

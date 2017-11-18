@@ -2,8 +2,6 @@ from threading import Thread, Event, Lock
 from entities.Obstacle import *
 
 from util.Algorithms import *
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 import numpy as np
 import time
 from Communication.Client import *
