@@ -76,8 +76,15 @@ def remove_tangents(tangentials, obstaclesInPath):
     for tangent in tangentials:
         for obstacle in obstaclesInPath:
             if tangent.obstacle is not obstacle:
-                #intersection = intersect_line_circle(tangent.slape, tangent.x1, tangent.y1, obstacle.x, obstacle.y, obstacle.estimateRadius)
                 intersection = intersect_line_line_inc(tangent.slape, tangent.x1, tangent.y1, obstacle.x, obstacle.y)
+                '''
+                è possibile effettuare anche il sistema tra la tangente e il singolo ostacolo ma per il tempo di esecuzione è preferibile utilizzare la
+                funzione intersect_line_line_inc
+
+                intersection = intersect_line_circle(tangent.slape, tangent.x1, tangent.y1, obstacle.x, obstacle.y, obstacle.estimateRadius)
+                if len(intersection) > 1:
+                    tangentTmp.append(tangent)
+                '''
                 x = None
                 y = None
                 for elem, value in intersection.items():
@@ -86,7 +93,7 @@ def remove_tangents(tangentials, obstaclesInPath):
                     elif str(elem) == 'y':
                         y = value
                 distance = float(sympy.Point(x, y).distance(sympy.Point(obstacle.x, obstacle.y)))
-                if distance <= obstacle.estimateRadius and tangent in tangentials:
+                if distance < obstacle.estimateRadius and tangent in tangentials:
                     tangentTmp.append(tangent)
 
     for tng in tangentTmp:

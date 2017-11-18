@@ -12,19 +12,27 @@ RETURN: coefficiente angolare della retta tangente
 '''
 def tangent_of_circle(x0, y0, xc, yc, r):
     m = sy.symbols('m', real=True)
+    #poniamo il delta uguale a zero dopo aver svolto a mano il risultato del sistema tra la retta e la circonferenza
     eq_delta = (2 * m * y0 - 2 * xc - 2 * m ** 2 * x0 - 2 * m * yc) ** 2 - 4 * (1 + m ** 2) * (
     xc ** 2 + x0 ** 2 * m ** 2 + y0 ** 2 + yc ** 2 - 2 * m * y0 * x0 + 2 * m * yc * x0 - 2 * y0 * yc - r ** 2)
+    #la seguente non restituisce le tangenti perpendicolari all'asse x
     slopes = sy.solveset(eq_delta, m, domain=sy.S.Reals)
     #invece di trovare l'intersezione con il cerchio troviamo l'intersezione con la retta perpendicolare passante per il raggio
     result = []
+    #qui troviamo i punti di intersezione tra la retta con coefficiente angolare appena trovato e la retta perpendicolare a questa passante per il centro della circonferenza
     for slope in slopes:
         slope = float(sy.sympify(slope))
         x, y = sy.symbols('x y', real=True)
+        #equazione della retta passante per il punto x0, y0 con coefficiente angolare "slope" -> y-y0 = m (x-x0)
         eq_line = y - slope * x + slope * x0 - y0
+        #ora dobbiamo trovare la retta perpendicolare a questa
+        #equazione della retta se slope è zero
         eq_line_r = x - xc
         if slope != 0:
+            #equaione della retta se slope è diverso da zero
             eq_line_r = y - (-1 / slope) * x + (-1 / slope) * xc - yc
         info = sy.solve([eq_line, eq_line_r])
+        #utilizziamo un dizionario per ordinare le informazioni della retta tangente alla circonferenza
         res = {}
         res['m'] = slope
         for key, value in info.items():
@@ -56,6 +64,7 @@ def tangent_x_circle(x0, xc, yc, r):
     return result
 
 '''
+NON UTILIZZATA
 Calcola i punti di intersezione tra una circonferenza e una retta che passa per il punto x0, y0.
 x0Line, y0Line: punto della retta
 xCircle, yCircle, ray: centro della circonferenza e il raggio.
@@ -80,14 +89,19 @@ def line_slope(x0, y0, x1, y1):
         return sy.limit(f, x1, x0)
     return (y1-y0)/(x1-x0)
 
+'''
+funzione per il caloclo del punto di intersezione tra una retta passante per il punto x0, y0 con coefficiente
+angolare m e la retta perpendicolare a questa passante per il punto xc, yc
+RETURN: coordinate del punto di intersezione in una lista (result) di dizionario
+'''
 def intersect_line_line_inc(m, x0, y0, xc, yc):
     x, y = sy.symbols('x y', real=True)
     eq_line = None
     eq_line_r = None
-    if m != 0 and str(m) != 'inf':
+    if m != 0 and str(m) != 'inf' and str(m) != '-inf':
         eq_line = y - m * x + m * x0 - y0
         eq_line_r = y - (-1 / m) * x + (-1 / m) * xc - yc
-    elif str(m) == 'inf':
+    elif str(m) == 'inf' or str(m) == '-inf':
         eq_line = x - x0
         eq_line_r = y - yc
     elif m == 0:
@@ -96,6 +110,15 @@ def intersect_line_line_inc(m, x0, y0, xc, yc):
     result = sy.solve([eq_line, eq_line_r])
     return result
 
+'''
+funzione per il calcolo della lunghezza dell'arco di circonferenza.
+x0c: è la cordinata x del punto sulla circonferenza da cui parte l'arco.
+y0c: è la cordinata y del punto sulla circonferenza da cui parte l'arco.
+x1c: è la cordinata x del punto sulla circonferenza a cui arriva l'arco.
+y1c: è la cordinata y del punto sulla circonferenza a cui arriva l'arco.
+r: raggio della circonferenza
+RETURN: lunghezza dell'arco di circonferenza
+'''
 def bow_circumference(x0c, y0c, x1c, y1c, r):
     p1 = sy.Point(x0c, y0c)
     p2 = sy.Point(x1c, y1c)
