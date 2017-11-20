@@ -11,7 +11,7 @@ class Client(Thread):
 
     #Il peer recupera gli indirizzi degli altri peer della rete da un file e fa partire il thread Connection per ognuno di questi
     def run(self):
-        while not self.stopped.wait(5):
+        while not self.stopped.wait(self.robot.TC_CLOCK):
             file = open("address_list", 'r')
             for line in file:
                 address = line.strip().split(',')

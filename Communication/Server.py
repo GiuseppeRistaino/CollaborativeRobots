@@ -1,5 +1,6 @@
 import socket
 import threading
+from threading import Thread
 import sys
 import pickle
 import io
@@ -18,19 +19,16 @@ class Server():
         # Il server é in ascolto e vengono messe in coda al massimo 10 richieste di connessione
         self.sock.listen(10)
         # rende la socket non bloccante
-        self.sock.setblocking(False)
+        self.sock.setblocking(True)
 
         # Thread per accettare connessioni
         accept = threading.Thread(target=self.acceptCon)
         # Thread che riceve la lista degli ostacoli e li rinvia ai client della rete
-        process = threading.Thread(target=self.processCon)
 
         #Il thread accept e proccess vengono dichiarati daemon e runnati
         accept.daemon = True
         accept.start()
 
-        process.daemon = True
-        process.start()
 
         #La condizione per fermare il server è digitare esci
         while True:
@@ -41,55 +39,58 @@ class Server():
             else:
                 pass
 
-
-    #funzione che permette di inviare il messaggio di un client, in pacchetti di 1024 byte, a tutti gli
-    #altri client della rete
-    def msg_to_all(self, msg, cliente):
-        for c in self.clients:
-            try:
-                if c != cliente:
-                    #c.send(msg)
-                    msg = io.BytesIO(msg)
-                    while True:
-                        chunk = msg.read(1024)
-                        if not chunk:
-                            c.send(b'end')
-                            break
-                        c.send(chunk)
-            except:
-                self.clients.remove(c)
-
     #funzione che accetta le connessioni
     def acceptCon(self):
         print("Accettazione")
         while True:
             try:
                 conn, addr = self.sock.accept()
-                conn.setblocking(False)
+                conn.setblocking(True)
                 self.clients.append(conn)
+                self.Connection(conn, self.clients).start()
+
             except:
                 pass
 
-    #funzione che permette di ricevere il messaggio di un client, in pacchetti di 1024 byte, e
-    #richiama la funzione msg_to_all
-    def processCon(self):
-        print("Processamento")
-        data = b""
-        while True:
-            if len(self.clients) > 0:
-                for c in self.clients:
-                    try:
-                        #data = c.recv(1024)
+
+    class Connection(Thread):
+
+        def __init__(self, conn, clients):
+            Thread.__init__(self)
+            self.conn = conn
+            self.clients = clients
+
+        def run(self):
+            while True:
+                data = b''
+                try:
+                    chunk = self.conn.recv(1024)
+                    while chunk != b'end':
+                        data += chunk
+                        chunk = self.conn.recv(1024)
+                    data = pickle.loads(data)
+                    self.msg_to_all(data, self.conn)
+                except:
+                    pass
+
+        # funzione che permette di inviare il messaggio di un client, in pacchetti di 1024 byte, a tutti gli
+        # altri client della rete
+        def msg_to_all(self, msg, cliente):
+
+            sending = pickle.dumps(msg)
+            for c in self.clients:
+                try:
+                    if c != cliente:
+                        msg = io.BytesIO(sending)
                         while True:
-                            chunk = c.recv(1024)
-                            if chunk != b'end':
-                                data += chunk
-                            else:
-                                self.msg_to_all(data, c)
-                                data = b""
+                            chunk = msg.read(1024)
+                            if not chunk:
+                                c.send(b'end')
                                 break
-                    except:
-                        pass
+                            c.send(chunk)
+                except BaseException as e:
+                    print(e)
+                    self.clients.remove(c)
 
 
 s = Server()

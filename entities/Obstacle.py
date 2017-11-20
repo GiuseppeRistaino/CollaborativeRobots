@@ -4,7 +4,13 @@ import sys
 import pickle
 
 
-
+'''
+classe Obstacle per identificare un ostacolo.
+x, y: coordinate della posizione dell'ostacolo
+radius: raggio dell'ostacolo
+estimateRadius: raggio stimato dai robot
+key: identificativo dell'ostacolo
+'''
 class Obstacle:
 
     def __init__(self, x, y, radius, estimateRadius=None, key=None):
@@ -16,10 +22,6 @@ class Obstacle:
         self.key=key
         self.circle = sympy.Circle(sympy.Point(self.x, self.y), radius)
 
-    def same_position(self, obstacle):
-        if obstacle.x == self.x and obstacle.y == self.y:
-            return True
-        return False
 
 
 

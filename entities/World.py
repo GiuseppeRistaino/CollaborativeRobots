@@ -15,22 +15,28 @@ class World:
         #o4 = Obstacle(-2, -4, 1)
         self.obstacles.append(o1)
         self.obstacles.append(o2)
-        self.obstacles.append(o3)
+        #self.obstacles.append(o3)
         #self.obstacles.append(o4)
 
-        targetPoint = sympy.Point(-8, 0)
+        targetPoint = sympy.Point(8, 0)
 
-        self.r1 = Robot(2, 3, targetPoint, self.obstacles, 'r')
-        self.r2 = Robot(5, 0, targetPoint, self.obstacles, 'b')
+        self.r1 = Robot(-2, 3, targetPoint, 'r')
+        self.r1.initialize_obstacles(self.obstacles)
+        self.r2 = Robot(-5, 0, targetPoint, 'b')
+        self.r2.initialize_obstacles(self.obstacles)
+        self.r3 = Robot(-7, -1, targetPoint, 'g')
+        self.r3.initialize_obstacles(self.obstacles)
 
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 
         self.pointRobot_r1, = self.ax.plot([self.r1.x], [self.r1.y], 'ro', lw=1)
         self.pointRobot_r2, = self.ax.plot([self.r2.x], [self.r2.y], 'bo', lw=1)
+        self.pointRobot_r3, = self.ax.plot([self.r3.x], [self.r3.y], 'go', lw=1)
 
         self.r1.start_actions(plt, self.ax, self.pointRobot_r1)
         self.r2.start_actions(plt, self.ax, self.pointRobot_r2)
+        self.r3.start_actions(plt, self.ax, self.pointRobot_r3)
         #self.r3.start_actions(plt, self.circles_r3, self.pointRobot_r3)
         #MyThread(self.fig, self.r1, self.ax, self.obstacles, targetPoint).start()
         #MyThread(self.fig, self.r2, self.ax, self.obstacles, targetPoint).start()
@@ -43,15 +49,6 @@ class World:
         #self.draw_obstacles(self.r1)
         #self.draw()
         plt.show()
-
-    def draw_obstacles(self, robot):
-        circles = {}
-        for obstacle in robot.obstacles:
-            circle = plt.Circle((obstacle.x, obstacle.y), obstacle.estimateRadius,
-                                color=robot.color, fill=False)
-            self.ax.add_artist(circle)
-            circles[circle] = obstacle
-        return circles
 
     '''
     # initialization function: plot the background of each frame

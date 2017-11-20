@@ -17,24 +17,20 @@ class Robot:
     TP_CLOCK = 4.0  #clock per l'aggiornamento dell'algoritmo di pianificazione
     TE_CLOCK = 4.0  #clock per l'aggiornamento della stima del raggio degli ostacoli
 
-    def __init__(self, x, y, targetPoint, obstacles, color, address):
+    def __init__(self, x, y, targetPoint, color, address):
         self.x = x
         self.y = y
         self.color = color
-        self.zp = 0.0 #timer per l'aggiornamento della funzione plan
         self.state = self.STATES[0]
         self.targetPoint = targetPoint
         self.obstacles = []
-        self.initialize_obstacles(obstacles)
-        self.obstaclesCopy = []
-        self.theta = None
+        self.obstaclesCopy = [] #copia della lista degli ostacoli per velocizzare il parallelismo a discapito della memoria
+        self.theta = 0.0
         self.speed = 0.0
         self.event_TP_Clock = Event()
         self.event_TE_Clock = Event()
         self.lock = Lock()
         self.address = address
-        #self.Thread_TP_Clock(self, self.event_TP_Clock, self.lock).start()
-        #self.Thread_TE_Clock(self, self.event_TE_Clock, self.lock).start()
 
     def get_distance_from_obstacle(self, x, y, obstacle):
         return sympy.Point(obstacle.x, obstacle.y).distance(sympy.Point(x, y))

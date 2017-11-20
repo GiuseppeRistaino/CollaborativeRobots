@@ -20,8 +20,10 @@ class World:
 
         targetPoint = sympy.Point(-8, 0)
 
-        self.r1 = Robot(2, 3, targetPoint, self.obstacles, 'r', ("127.0.0.1", 8080))
-        self.r2 = Robot(5, 0, targetPoint, self.obstacles, 'b', ("127.0.0.1", 8081))
+        self.r1 = Robot(2, 3, targetPoint, 'r', ("127.0.0.1", 8080))
+        self.r1.initialize_obstacles(self.obstacles)
+        self.r2 = Robot(5, 0, targetPoint, 'b', ("127.0.0.1", 8081))
+        self.r2.initialize_obstacles(self.obstacles)
 
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
