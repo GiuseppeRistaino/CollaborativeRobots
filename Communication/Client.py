@@ -27,9 +27,12 @@ class Client(Thread):
         self.lock = lock
         #self.radius_list = [1, 2, 3, 4]
 
-
     def run(self):
         while not self.stopped.wait(5):
+            #Nel momento in cui i robot devono scambiarsi la lista degli ostacoli è possibile
+            #che tale lista venga utilizzata per altre attività e quindi i valori al suo interno
+            #potrebbero cambiare. Per questo motivo lo stesso lock utilizzato sulla stessa risorsa
+            #viene richiamato in questa funzione.
             self.lock.acquire()
             self.send_msg(self.robot.obstacles)
             self.lock.release()
@@ -57,7 +60,7 @@ class Client(Thread):
                     self.lock.release()
             except:
                 pass
-    #funzione invia il messaggio del client(la lista degli ostacoli) in pacchetti da 1024 byte
+    #funzione che invia il messaggio del client(la lista degli ostacoli) in pacchetti da 1024 byte
     def send_msg(self, msg):
         data_send = pickle.dumps(msg)
         #self.sock.send(pickle.dumps(msg))

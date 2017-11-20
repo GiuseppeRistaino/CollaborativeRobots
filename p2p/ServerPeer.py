@@ -14,6 +14,7 @@ class Server(Thread):
         self.server_socket.bind(self.robot.address)
         self.server_socket.listen(2)
 
+    # Per ogni connessione accettata fa partire il Thread Connection_Thread
     def run(self):
         while True:
             conn, addr = self.server_socket.accept()
@@ -27,6 +28,7 @@ class Connection_Thread(Thread):
         self.addr = addr
         self.robot = robot
 
+    # Invia la lista degli ostacoli agli altri peer attraverso pacchetti da 1024 byte
     def run(self):
         print("sto inviando la lista a " +str(self.addr))
         data_send = pickle.dumps(self.robot.obstacles)

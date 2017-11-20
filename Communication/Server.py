@@ -11,7 +11,7 @@ class Server():
     def __init__(self, host="localhost", port=4000):
 
         self.clients = []
-
+        #crea una socket inet di tipo sock_stream
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # associa il socket a un host e alla porta 4000
         self.sock.bind((str(host), int(port)))

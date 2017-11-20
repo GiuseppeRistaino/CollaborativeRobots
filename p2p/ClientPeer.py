@@ -9,6 +9,7 @@ class Client(Thread):
         self.robot = robot
         self.stopped = Event()
 
+    #Il peer recupera gli indirizzi degli altri peer della rete da un file e fa partire il thread Connection per ognuno di questi
     def run(self):
         while not self.stopped.wait(5):
             file = open("address_list", 'r')
@@ -18,6 +19,7 @@ class Client(Thread):
                     Connection(address, self.robot).start()
             #exit()
 
+# Thread per gestire connessioni
 class Connection(Thread):
 
     def __init__(self, address, robot):
@@ -25,6 +27,9 @@ class Connection(Thread):
         self.robot = robot
         self.address = address
 
+    #Crea una socket che si connette ai peer della rete. In ricezione arrivano pacchetti da 1024 byte che
+    #vengono assemblati per creare il messaggio. Una volta ricostruito il messaggio viene richiamata la funzione
+    #compare_obstacles di RobotPeer
     def run(self):
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((self.address[0], int(self.address[1])))
