@@ -31,17 +31,21 @@ class Connection(Thread):
     #vengono assemblati per creare il messaggio. Una volta ricostruito il messaggio viene richiamata la funzione
     #compare_obstacles di RobotPeer
     def run(self):
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((self.address[0], int(self.address[1])))
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect((self.address[0], int(self.address[1])))
 
-        data = b""
-        while True:
-            chunk = client_socket.recv(1024)
-            if chunk:
-                data += chunk
-            else:
-                break
-        if data:
-            data = pickle.loads(data)
-            print("Ricevuto: ", data)
-            self.robot.compare_obstacles(data)
+            data = b""
+            while True:
+                chunk = client_socket.recv(1024)
+                if chunk:
+                    data += chunk
+                else:
+                    break
+            if data:
+                data = pickle.loads(data)
+                print("Ricevuto: ", data)
+                self.robot.compare_obstacles(data)
+        except:
+            print("Server irraggiungibile")
+            pass

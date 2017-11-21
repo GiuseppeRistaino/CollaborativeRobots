@@ -11,12 +11,12 @@ class World:
         self.obstacles = []
         o1 = Obstacle(0, 0, 1, key=0)
         o2 = Obstacle(0, 2, 1, key=1)
-        o3 = Obstacle(-2, 4, 1, key=2)
-        o4 = Obstacle(-2, -4, 1, key=3)
+        #o3 = Obstacle(-2, 4, 1, key=2)
+        #o4 = Obstacle(-2, -4, 1, key=3)
         self.obstacles.append(o1)
         self.obstacles.append(o2)
-        self.obstacles.append(o3)
-        self.obstacles.append(o4)
+        #self.obstacles.append(o3)
+        #self.obstacles.append(o4)
 
         targetPoint = sympy.Point(-8, 0)
 
@@ -24,33 +24,39 @@ class World:
         self.r1.initialize_obstacles(self.obstacles)
         self.r2 = Robot(5, 0, targetPoint, 'b', ("127.0.0.1", 8081))
         self.r2.initialize_obstacles(self.obstacles)
+        #self.r3 = Robot(7, -2, targetPoint, 'g', ("127.0.0.1", 8082))
+        #self.r3.initialize_obstacles(self.obstacles)
 
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 
         self.pointRobot_r1, = self.ax.plot([self.r1.x], [self.r1.y], 'ro', lw=1)
         self.pointRobot_r2, = self.ax.plot([self.r2.x], [self.r2.y], 'bo', lw=1)
+        #self.pointRobot_r3, = self.ax.plot([self.r2.x], [self.r2.y], 'go', lw=1)
 
         self.r1.start_actions(plt, self.ax, self.pointRobot_r1)
         self.r2.start_actions(plt, self.ax, self.pointRobot_r2)
+        #self.r3.start_actions(plt, self.ax, self.pointRobot_r3)
         #self.r3.start_actions(plt, self.circles_r3, self.pointRobot_r3)
         #MyThread(self.fig, self.r1, self.ax, self.obstacles, targetPoint).start()
         #MyThread(self.fig, self.r2, self.ax, self.obstacles, targetPoint).start()
         #self.r1.Thread_Animation(plt, self.r1, self.ax, self.obstacles, targetPoint).start()
         #self.r2.Thread_Animation(plt, self.r2, self.ax, self.obstacles, targetPoint).start()
 
+        self.pointTarget, = self.ax.plot([targetPoint.x], [targetPoint.y], 'ko', lw=1)
+
         #self.circles_r1 = self.draw_obstacles(self.r1)
         #self.circles_r2 = self.draw_obstacles(self.r2)
 
-        #self.draw_obstacles(self.r1)
+        self.draw_obstacles()
         #self.draw()
         plt.show()
 
-    def draw_obstacles(self, robot):
+    def draw_obstacles(self):
         circles = {}
-        for obstacle in robot.obstacles:
-            circle = plt.Circle((obstacle.x, obstacle.y), obstacle.estimateRadius,
-                                color=robot.color, fill=False)
+        for obstacle in self.obstacles:
+            circle = plt.Circle((obstacle.x, obstacle.y), obstacle.radius,
+                                color="black", fill=False)
             self.ax.add_artist(circle)
             circles[circle] = obstacle
         return circles

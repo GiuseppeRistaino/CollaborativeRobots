@@ -17,9 +17,9 @@ class Robot:
     ESTIMATE_TARGET_RADIUS = (VELOCITY * TIME_INTERVAL) / 2
     #Gli stati del sistema ibrido
     STATES = ("MOVE", "STOP")
-    TP_CLOCK = 4.0  #clock per l'aggiornamento dell'algoritmo di pianificazione
+    TP_CLOCK = 8.0  #clock per l'aggiornamento dell'algoritmo di pianificazione
     TE_CLOCK = 4.0  #clock per l'aggiornamento della stima del raggio degli ostacoli
-    TC_CLOCK = 5.0  #clock per la comunicazione
+    TC_CLOCK = 6.0  #clock per la comunicazione
 
     def __init__(self, x, y, targetPoint, color):
         self.x = x
@@ -57,7 +57,7 @@ class Robot:
     def initialize_obstacles(self, obstacles):
         for obstacle in obstacles:
             estimateRadius = self.estimate_radius(obstacle)
-            self.obstacles.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, estimateRadius))
+            self.obstacles.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, estimateRadius, key=obstacle.key))
 
     #esegue un calcolo della stima degli ostacoli e aggiorna di conseguenza il raggio (estimateRadius) degli ostacoli a quello minore
     def estimate_obstacles(self):
@@ -117,7 +117,7 @@ class Robot:
         è possibile disabilitare questa istruzione dato che anche se il robot continua a muoversi si fermerà non appena
         incontrerà un ostacolo lungo il suo cammino.
         '''
-        self.speed = 0.0
+        #self.speed = 0.0
         '''
         Il robot si deve per forza fermare perchè nel caso in cui si muovesse mentre sta pianificando,
         la posizione in cui si trova non combacerebbe con quella iniziale del percorso. Quindi andando a calcolare
@@ -162,7 +162,7 @@ class Robot:
     def copy_obstacle(self):
         obstaclesCopy = []
         for obstacle in self.obstacles:
-            obstaclesCopy.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, obstacle.estimateRadius))
+            obstaclesCopy.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, obstacle.estimateRadius, key=obstacle.key))
         return obstaclesCopy
 
     #fa partire tutti i thread che eseguono le operazioni del robot

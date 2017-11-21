@@ -152,5 +152,8 @@ def build_path(startPoint, targetPoint, obstacles):
     path = []
     if startPoint in graph.edges.keys():
         came_from, cost_so_far = a_star_search(graph, startPoint, targetPoint)
-        path = reconstruct_path(came_from, startPoint, targetPoint)
+        if targetPoint in came_from:
+            path = reconstruct_path(came_from, startPoint, targetPoint)
+        else:
+            print("PERCORSO NON TROVATO")
     return path

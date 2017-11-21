@@ -12,7 +12,7 @@ class Server(Thread):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.server_socket.bind(self.robot.address)
-        self.server_socket.listen(2)
+        self.server_socket.listen(5)
 
     # Per ogni connessione accettata fa partire il Thread Connection_Thread
     def run(self):

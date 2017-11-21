@@ -13,9 +13,10 @@ class Robot:
     VISIBILITY = 0.5
     TIME_INTERVAL = 0.5 #secondi
     ESTIMATE_TARGET_RADIUS = (VELOCITY * TIME_INTERVAL) / 2
-    STATES = ("MOVE", "STOP", "ERROR")
-    TP_CLOCK = 4.0  #clock per l'aggiornamento dell'algoritmo di pianificazione
+    STATES = ("MOVE", "STOP")
+    TP_CLOCK = 8.0  #clock per l'aggiornamento dell'algoritmo di pianificazione
     TE_CLOCK = 4.0  #clock per l'aggiornamento della stima del raggio degli ostacoli
+    TC_CLOCK = 6.0  #clock per l'aggiornamento della comunicazione
 
     def __init__(self, x, y, targetPoint, color, address):
         self.x = x
@@ -45,7 +46,7 @@ class Robot:
     def initialize_obstacles(self, obstacles):
         for obstacle in obstacles:
             estimateRadius = self.estimate_radius(obstacle)
-            self.obstacles.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, estimateRadius))
+            self.obstacles.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, estimateRadius, key=obstacle.key))
 
     def estimate_obstacles(self):
         for obstacle in self.obstacles:
@@ -135,7 +136,7 @@ class Robot:
     def copy_obstacle(self):
         obstaclesCopy = []
         for obstacle in self.obstacles:
-            obstaclesCopy.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, obstacle.estimateRadius))
+            obstaclesCopy.append(Obstacle(obstacle.x, obstacle.y, obstacle.radius, obstacle.estimateRadius, key=obstacle.key))
         return obstaclesCopy
 
     def start_actions(self, plt, ax, pointRobot):

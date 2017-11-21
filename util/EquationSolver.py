@@ -16,40 +16,43 @@ def tangent_of_circle(x0, y0, xc, yc, r):
     eq_delta = (2 * m * y0 - 2 * xc - 2 * m ** 2 * x0 - 2 * m * yc) ** 2 - 4 * (1 + m ** 2) * (
     xc ** 2 + x0 ** 2 * m ** 2 + y0 ** 2 + yc ** 2 - 2 * m * y0 * x0 + 2 * m * yc * x0 - 2 * y0 * yc - r ** 2)
     #la seguente non restituisce le tangenti perpendicolari all'asse x
-    slopes = sy.solveset(eq_delta, m, domain=sy.S.Reals)
-    #invece di trovare l'intersezione con il cerchio troviamo l'intersezione con la retta perpendicolare passante per il raggio
     result = []
-    #qui troviamo i punti di intersezione tra la retta con coefficiente angolare appena trovato e la retta perpendicolare a questa passante per il centro della circonferenza
-    for slope in slopes:
-        slope = float(sy.sympify(slope))
-        x, y = sy.symbols('x y', real=True)
-        #equazione della retta passante per il punto x0, y0 con coefficiente angolare "slope" -> y-y0 = m (x-x0)
-        eq_line = y - slope * x + slope * x0 - y0
-        #ora dobbiamo trovare la retta perpendicolare a questa
-        #equazione della retta se slope è zero
-        eq_line_r = x - xc
-        if slope != 0:
-            #equaione della retta se slope è diverso da zero
-            eq_line_r = y - (-1 / slope) * x + (-1 / slope) * xc - yc
-        info = sy.solve([eq_line, eq_line_r])
-        #utilizziamo un dizionario per ordinare le informazioni della retta tangente alla circonferenza
-        res = {}
-        res['m'] = slope
-        for key, value in info.items():
-            if str(key) == 'x':
-                res['x'] = value
-            elif str(key) == 'y':
+    try:
+        slopes = sy.solveset(eq_delta, m, domain=sy.S.Reals)
+        #invece di trovare l'intersezione con il cerchio troviamo l'intersezione con la retta perpendicolare passante per il raggio
+        #qui troviamo i punti di intersezione tra la retta con coefficiente angolare appena trovato e la retta perpendicolare a questa passante per il centro della circonferenza
+        for slope in slopes:
+            slope = float(sy.sympify(slope))
+            x, y = sy.symbols('x y', real=True)
+            #equazione della retta passante per il punto x0, y0 con coefficiente angolare "slope" -> y-y0 = m (x-x0)
+            eq_line = y - slope * x + slope * x0 - y0
+            #ora dobbiamo trovare la retta perpendicolare a questa
+            #equazione della retta se slope è zero
+            eq_line_r = x - xc
+            if slope != 0:
+                #equaione della retta se slope è diverso da zero
+                eq_line_r = y - (-1 / slope) * x + (-1 / slope) * xc - yc
+            info = sy.solve([eq_line, eq_line_r])
+            #utilizziamo un dizionario per ordinare le informazioni della retta tangente alla circonferenza
+            res = {}
+            res['m'] = slope
+            for key, value in info.items():
+                if str(key) == 'x':
+                    res['x'] = value
+                elif str(key) == 'y':
+                    res['y'] = value
+            result.append(res)
+        #verifica del'esistenza di tangenti perpendicolari all'asse x
+        resX = tangent_x_circle(x0, xc, yc, r)
+        if len(resX) == 1:  #vuol dire che vi è una tangente
+            res = {}
+            for value in resX:
+                res['m'] = nmp.inf
+                res['x'] = x0
                 res['y'] = value
-        result.append(res)
-    #verifica del'esistenza di tangenti perpendicolari all'asse x
-    resX = tangent_x_circle(x0, xc, yc, r)
-    if len(resX) == 1:  #vuol dire che vi è una tangente
-        res = {}
-        for value in resX:
-            res['m'] = nmp.inf
-            res['x'] = x0
-            res['y'] = value
-        result.append(res)
+            result.append(res)
+    except:
+        print("NON RIESCO A RISOLVERE L'EQUAZIONE")
     return result
 
 '''
